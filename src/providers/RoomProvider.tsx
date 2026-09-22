@@ -6,7 +6,7 @@ function RoomProvider({children}: { children?: React.ReactNode }) {
 
 const [room, setRoom] = useState<Room>({} as Room);
 const [roomList, setRoomList] = useState<Room[]>([]);
-const url = 'http://localhost:3000/salles';
+const url = 'http://localhost:3000/api/rooms';
 
 async function getRoom(id:string){
     const res = await fetch(url+"/"+id);

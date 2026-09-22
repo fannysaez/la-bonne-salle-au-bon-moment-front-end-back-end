@@ -15,7 +15,7 @@ function UserProvider({ children }: { children?: React.ReactNode }) {
 
     async function getUserList(){
         try{
-            const res = await fetch("http://localhost:3000/users");
+            const res = await fetch("http://localhost:3000/api/users");
             if(!res.ok){
                 throw new Error("Erreur lors de la récupération");
             }

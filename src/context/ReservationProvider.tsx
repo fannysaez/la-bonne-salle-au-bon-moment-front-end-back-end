@@ -6,7 +6,7 @@ function ReservationProvider({children}: { children?: React.ReactNode }) {
 
 const [reservation, setReservation] = useState<Reservation>({} as Reservation);
 const [reservationList, setReservationList] = useState<Reservation[]>([]);
-const url = 'http://localhost:3000/reservations';
+const url = 'http://localhost:3000/api/reservations';
 
 async function getReservation(id:string){
     try{
