@@ -1,96 +1,74 @@
-import { useState } from "react";
-import { ReservationContext } from "./ReservationContext";
+import React, { useState, useContext } from "react";
 import type { Reservation } from "./ReservationContext";
+import { ReservationContext } from "./ReservationContext";
+export const ReservationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [reservation, setReservation] = useState<Reservation | null>(null);
+  const [reservationList, setReservationList] = useState<Reservation[]>([]);
 
-function ReservationProvider({children}: { children?: React.ReactNode }) {
+  const getReservation = async (_id: string) => {
+    const response = await fetch(`http://localhost:3000/api/reservations/${_id}`, {
+      credentials: "include",
+    });
+    const data = await response.json();
+    setReservation(data);
+  };
 
-const [reservation, setReservation] = useState<Reservation>({} as Reservation);
-const [reservationList, setReservationList] = useState<Reservation[]>([]);
-const url = 'http://localhost:3000/api/reservations';
+  const postReservation = async (reservation: Reservation) => {
+    await fetch("http://localhost:3000/api/reservations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(reservation),
+    });
+  };
 
-async function getReservation(id:string){
-    try{
-        const res = await fetch(url+"/"+id);
-        const data = await res.json();
-        if(!res.ok){
-            throw new Error("Erreur lors de la récupération");
-        }
-        setReservation(data);
-    }catch(error:any){
-        error && console.log("Une erreur est survenue" + error.message);
-    }
-}
+  const putReservation = async (_id: string, reservation: Reservation) => {
+    await fetch(`http://localhost:3000/api/reservations/${_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(reservation),
+    });
+  };
 
-async function postReservation(reservation:Reservation){
-    try{
-        const res = await fetch(url, {
-        method:'POST',
-        headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(reservation)
-        });
-        if(!res.ok){
-            throw new Error("Erreur lors de la récupération");
-        }
-        const data = await res.json()
-    }catch(error:any){
-        error && console.log("Une erreur est survenue" + error.message);
-    }
-}
+  const deleteReservation = async (_id: string) => {
+    await fetch(`http://localhost:3000/api/reservations/${_id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+  };
 
-async function putReservation(id:string, reservation:Reservation){
-    try{
-        const res = await fetch((url+"/"+id), {
-        method:'PUT',
-        headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(reservation)
-        });
-        if(!res.ok){
-            throw new Error("Erreur lors de la récupération");
-        }
-        const data = await res.json()
-    }catch(error:any){
-        error && console.log("Une erreur est survenue" + error.message);
-    }
-}
+  const getReservationList = async () => {
+    const response = await fetch("http://localhost:3000/api/reservations", {
+      credentials: "include",
+    });
+    const data = await response.json();
+    setReservationList(data);
+  };
 
-async function deleteReservation(id:string){
-    try{
-        const res = await fetch((url+"/"+id), {
-        method:'DELETE',
-        headers: {
-        'Content-Type': 'application/json'
-        },
-        });
-        if(!res.ok){
-            throw new Error("Erreur lors de la récupération");
-        }
-        const data = await res.json()
-    }catch(error:any){
-        error && console.log("Une erreur est survenue" + error.message);
-    }
-}
+  return (
+    <ReservationContext.Provider
+      value={{
+        _id: reservation?._id ?? "",
+        userId: reservation?.userId ?? "",
+        roomId: reservation?.roomId ?? "",
+        startDate: reservation?.startDate ?? "",
+        endDate: reservation?.endDate ?? "",
+        getReservation,
+        postReservation,
+        putReservation,
+        deleteReservation,
+        getReservationList,
+        reservationList,
+      }}
+    >
+      {children}
+    </ReservationContext.Provider>
+  );
+};
 
-async function getReservationList(){
-    try{
-        const res = await fetch(url);
-        if(!res.ok){
-            throw new Error("Erreur lors de la récupération");
-        }
-        const data = await res.json();
-        setReservationList(data);
-    }catch(error:any){
-        error && console.log("Une erreur est survenue" + error.message);
-    }
-}
-
-return (
-<ReservationContext.Provider value={{getReservation, postReservation, putReservation,deleteReservation, getReservationList,reservationList,...reservation}}>
-{children}
-</ReservationContext.Provider>
-);
-}
-export default ReservationProvider;
+export const useReservation = () => {
+  const context = useContext(ReservationContext);
+  if (!context) throw new Error("useReservation must be used within a ReservationProvider");
+  return context;
+};
