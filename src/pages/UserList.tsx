@@ -7,11 +7,10 @@ function UserList() {
     useEffect(() => { getUserList() }, [])
 
     return (
-
         <>
             <div className="grid grid-cols-4 mt-10 p-5">
                 {userList.map((user) => (
-                    <UserCard key={user.id} user={user} />
+                    <UserCard key={user._id} user={user} />
                 ))}
             </div>
         </>

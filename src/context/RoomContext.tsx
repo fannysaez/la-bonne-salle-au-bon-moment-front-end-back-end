@@ -1,18 +1,18 @@
 import { createContext } from "react";
 
 export type Room = {
-    id:string,
-    name:string,
-    capacity:number,
+    _id: string,
+    name: string,
+    capacity: number,
 }
 
 export interface RoomContextType extends Room {
-    getRoom:(id:string)=>void;
-    postRoom:(room:Room)=>void;
-    putRoom:(id:string, room:Room)=>void;
-    deleteRoom:(id:string)=>void;
-    getRoomList:()=>void;
-    roomList:Room[];
+    getRoom: (_id: string) => void;
+    postRoom: (room: Room) => void;
+    putRoom: (_id: string, room: Room) => void;
+    deleteRoom: (_id: string) => void;
+    getRoomList: () => void;
+    roomList: Room[];
 }
 
 export const RoomContext = createContext<RoomContextType>(
