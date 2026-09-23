@@ -2,7 +2,7 @@ import './App.css'
 import { BrowserRouter } from 'react-router'
 import AppRoutes from './AppRoutes'
 import UserProvider from './providers/UserProvider'
-import ReservationProvider from './context/ReservationProvider'
+import {ReservationProvider} from './context/ReservationProvider'
 import RoomProvider from './providers/RoomProvider'
 
 function App() {
