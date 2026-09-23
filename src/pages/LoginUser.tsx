@@ -16,49 +16,32 @@ function LoginUser() {
 
     const { login } = context;
 
-    async function onSubmit(data) {
-        try {
-            //Empêche l'email et le mot de passe en clair dans l'url
-            const response = await fetch(
-                `http://localhost:3000/users?email=${encodeURIComponent(data.email)}&password=${encodeURIComponent(data.password)}`
-            );
+async function onSubmit(data) {
+    try {
+        const response = await fetch('http://localhost:3000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',   // ← pour que le cookie httpOnly soit envoyé/reçu
+            body: JSON.stringify({ email: data.email, password: data.password }),
+        });
 
-            if (!response.ok) {
-                throw new Error("Erreur lors de la connexion");
-            }
-
-            const users = await response.json();
-
-            // Aucun utilisateur trouvé
-            if (users.length === 0) {
-                alert("Identifiants incorrects");
-                return;
-            }
-            const user = users[0];
-
-            const roleResponse = await fetch(
-                `http://localhost:3000/roles/${user.roleId}`
-            );
-
-            const role = await roleResponse.json();
-
-            //On enregistre l'info du rôle
-            const userWithRole = {
-                ...user,
-                roleLabel: role.label,
-            };
-
-            //Stockage dans le contexte
-            login(userWithRole);
-
-            //Redirection
-            navigate(`/dashboard/${role.label}`);
-
-        } catch (error) {
-            console.error(error);
-            alert("Une erreur est survenue");
+        if (!response.ok) {
+            const err = await response.json();
+            alert(err.message || 'Identifiants incorrects');
+            return;
         }
+
+        const result = await response.json();
+        // result = { user: { id, email, firstname, lastname, roleLabel } }
+
+        login(result.user);
+        navigate(`/dashboard/${result.user.roleLabel}`);
+
+    } catch (error) {
+        console.error(error);
+        alert('Une erreur est survenue');
     }
+}
     return (
         <>
             <main className="min-h-screen bg-[#BCCCDB] flex flex-col items-center">

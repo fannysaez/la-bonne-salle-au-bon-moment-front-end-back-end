@@ -5,10 +5,9 @@ export type User = {
     firstname: string,
     lastname: string,
     email: string,
-    roleId: string
-    roleLabel: string;
+    roleId?: string,     
+    roleLabel: string,
 };
-
 
 type UserContextType = {
     user: User | null;
