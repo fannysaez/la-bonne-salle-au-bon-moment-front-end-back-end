@@ -35,7 +35,7 @@ function Dashboard() {
                 Espace {role}
             </h2>
 
-            {role === "Administrateur" && (
+            {role === "Admin" && (
                 <div >
 
                     <div className="grid grid-cols-2 gap-5 mb-5">
