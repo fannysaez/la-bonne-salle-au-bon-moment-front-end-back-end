@@ -12,11 +12,12 @@ function NewRoom() {
     
     async function onSubmit(data: RoomFormData) {
         try {
-            const response = await fetch("http://localhost:3000/salles", {
+            const response = await fetch("http://localhost:3000/api/rooms", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
+                credentials: "include",
                 body: JSON.stringify(data)
             });
             if (!response.ok) {
