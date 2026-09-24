@@ -1,14 +1,12 @@
 import { useForm } from "react-hook-form";
-import { useState, useContext } from "react";
-import { useNavigate, NavLink } from "react-router";
+import { useState, useContext, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router";
 import { UserContext } from "../context/UserContext";
 import {
   HiArrowLeft,
-  HiHome,
   HiCalendar,
   HiBookOpen,
   HiCog,
-  HiLogout,
   HiAcademicCap,
 } from "react-icons/hi";
 import Navbar from "../composants/NavBar";
@@ -20,6 +18,10 @@ type RoomFormData = {
 
 function NewRoom() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const isEdit = !!id;
+
   const context = useContext(UserContext);
   const {
     register,
@@ -30,28 +32,29 @@ function NewRoom() {
   const [success, setSuccess] = useState(false);
 
   if (!context) return null;
-  const { user, logout } = context;
+  const { user } = context;
 
-  const navLinks = [
-    { to: `/dashboard/${user?.roleLabel}`, label: "Accueil", icon: <HiHome /> },
-    { to: "/viewreservation", label: "Planning", icon: <HiCalendar /> },
-    { to: "/createreservation", label: "Mes réservations", icon: <HiBookOpen /> },
-    ...(user?.roleLabel === "Admin"
-      ? [{ to: "/dashboard/Admin", label: "Espace Admin", icon: <HiCog /> }]
-      : []),
-  ];
-
-  const roleBadge = () => {
-    if (user?.roleLabel === "Admin") return { icon: <HiCog />, label: "Admin" };
-    if (user?.roleLabel === "Formateur") return { icon: <HiBookOpen />, label: "Formateur" };
-    return { icon: <HiAcademicCap />, label: "Apprenant" };
-  };
-  const badge = roleBadge();
+  useEffect(() => {
+    if (!isEdit) return;
+    fetch(`http://localhost:3000/api/rooms/${id}`, {
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        reset({ name: data.name, capacity: data.capacity });
+      })
+      .catch((err) => console.error("Erreur chargement salle:", err));
+  }, [id]);
 
   async function onSubmit(data: RoomFormData) {
     try {
-      const response = await fetch("http://localhost:3000/api/rooms", {
-        method: "POST",
+      const url = isEdit
+        ? `http://localhost:3000/api/rooms/${id}`
+        : "http://localhost:3000/api/rooms";
+      const method = isEdit ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(data),
@@ -65,10 +68,10 @@ function NewRoom() {
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
-        reset();
-      }, 10000);
+        if (!isEdit) reset();
+      }, 3000);
     } catch (error) {
-      console.error("Erreur dans la création de salle:", error);
+      console.error("Erreur:", error);
     }
   }
 
@@ -76,13 +79,14 @@ function NewRoom() {
     <div className="min-h-screen bg-navy">
       <Navbar />
 
-      {/* Contenu centré */}
       <div className="flex items-center justify-center px-4 py-16">
         <div className="card w-full max-w-lg p-8 border-t-4 border-t-lime">
 
           <div className="mb-8 page-header-text">
             <p className="section-label">Administration</p>
-            <h2 className="text-2xl font-bold text-white">Création de salle</h2>
+            <h2 className="text-2xl font-bold text-white">
+              {isEdit ? "Modifier la salle" : "Création de salle"}
+            </h2>
           </div>
 
           <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
@@ -134,13 +138,13 @@ function NewRoom() {
                 disabled={!isValid}
                 className="btn-lime flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Créer la salle
+                {isEdit ? "Enregistrer" : "Créer la salle"}
               </button>
             </div>
 
             {success && (
               <div className="flex items-center gap-2 rounded-lg bg-lime/20 border border-lime/40 px-4 py-3 text-lime text-sm font-medium">
-                ✓ Salle créée avec succès !
+                ✓ {isEdit ? "Salle modifiée avec succès !" : "Salle créée avec succès !"}
               </div>
             )}
           </form>
