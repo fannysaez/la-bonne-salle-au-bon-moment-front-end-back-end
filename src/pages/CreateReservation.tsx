@@ -16,6 +16,7 @@ import {
   HiLogout,
   HiAcademicCap,
 } from "react-icons/hi";
+import Navbar from "../composants/NavBar";
 
 function CreateReservation() {
   const { postReservation, getReservationList, reservationList } = useContext(ReservationContext);
@@ -42,6 +43,8 @@ function CreateReservation() {
   const [endDate, setEndDate] = useState("");
   const [success, setSuccess] = useState(false);
   const [errorForm, setErrorForm] = useState("");
+  const [roomPage, setRoomPage] = useState(1);
+  const ROOM_PAGE_SIZE = 5;
 
   useEffect(() => {
     if (user) setSelectedUserId(user._id);
@@ -94,6 +97,7 @@ function CreateReservation() {
     });
 
     setAvailableRooms(available);
+      setRoomPage(1);
     setSearched(true);
   }
 
@@ -107,51 +111,13 @@ function CreateReservation() {
 
   return (
     <div className="min-h-screen bg-navy">
-
-      {/* Navbar */}
-      <nav className="bg-navy-nav border-b border-navy-border">
-        <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[62px] gap-6">
-          <span className="text-lime font-bold text-sm tracking-widest shrink-0">
-            LA BONNE SALLE
-          </span>
-          <div className="flex items-center gap-1 flex-1">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end
-                className={({ isActive }) =>
-                  isActive
-                    ? "flex items-center gap-2 px-4 py-2 rounded-lg bg-lime text-navy font-semibold text-sm"
-                    : "flex items-center gap-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-navy-border text-sm transition-colors"
-                }
-              >
-                {link.icon}
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            {user && (
-              <span className="badge-green text-xs flex items-center gap-1">
-                {badge.icon} {badge.label}
-              </span>
-            )}
-            <button
-              onClick={() => { logout(); navigate("/"); }}
-              className="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm transition-colors"
-            >
-              <HiLogout /> Déconnexion
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Contenu */}
       <main className="max-w-4xl mx-auto px-6 py-10">
 
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 page-header-text">
           <p className="section-label">Planning</p>
           <h2 className="text-3xl font-bold text-white">Réserver un créneau</h2>
           <p className="text-gray-400 mt-1">Recherchez une salle disponible pour votre session</p>
@@ -205,12 +171,14 @@ function CreateReservation() {
                 </select>
               </div>
             )}
-            <button
-              onClick={handleSearch}
-              className="btn-lime flex items-center gap-2 px-6 py-2.5"
-            >
-              <HiSearch /> Rechercher
-            </button>
+            <div className="search-btn-wrapper">
+              <button
+                onClick={handleSearch}
+                className="btn-lime flex items-center gap-2 px-6 py-2.5"
+              >
+                <HiSearch /> Rechercher
+              </button>
+            </div>
           </div>
           {errorForm && (
             <p className="text-red-400 text-sm mt-3 bg-red-400/10 border border-red-400/30 rounded-lg px-4 py-2">
@@ -229,7 +197,7 @@ function CreateReservation() {
 
         {/* Résultats */}
         {searched && (
-          <div>
+          <div className="mt-8">
             <p className="section-label mb-4">
               SALLES DISPONIBLES — {availableRooms.length} résultat{availableRooms.length !== 1 ? "s" : ""}
             </p>
@@ -239,7 +207,7 @@ function CreateReservation() {
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                {availableRooms.map((room) => (
+                {availableRooms.slice((roomPage - 1) * ROOM_PAGE_SIZE, roomPage * ROOM_PAGE_SIZE).map((room) => (
                   <div key={room._id} className="card p-5 flex items-center gap-4 border-l-4 border-l-lime">
                     <div className="flex-1">
                       <h3 className="text-white font-semibold">{room.name}</h3>
@@ -257,6 +225,25 @@ function CreateReservation() {
                     </button>
                   </div>
                 ))}
+                {Math.ceil(availableRooms.length / ROOM_PAGE_SIZE) > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-2">
+                    <button
+                      onClick={() => setRoomPage(p => Math.max(1, p - 1))}
+                      disabled={roomPage === 1}
+                      className="px-3 py-1.5 rounded-lg border border-navy-border text-gray-400 text-sm disabled:opacity-40 hover:text-white hover:border-gray-500 transition-colors"
+                    >
+                      ← Préc.
+                    </button>
+                    <span className="text-gray-400 text-sm">{roomPage} / {Math.ceil(availableRooms.length / ROOM_PAGE_SIZE)}</span>
+                    <button
+                      onClick={() => setRoomPage(p => Math.min(Math.ceil(availableRooms.length / ROOM_PAGE_SIZE), p + 1))}
+                      disabled={roomPage === Math.ceil(availableRooms.length / ROOM_PAGE_SIZE)}
+                      className="px-3 py-1.5 rounded-lg border border-navy-border text-gray-400 text-sm disabled:opacity-40 hover:text-white hover:border-gray-500 transition-colors"
+                    >
+                      Suiv. →
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
