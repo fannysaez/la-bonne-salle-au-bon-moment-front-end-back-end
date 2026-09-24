@@ -1,76 +1,190 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { useNavigate, NavLink } from "react-router";
+import { UserContext } from "../context/UserContext";
+import {
+  HiArrowLeft,
+  HiHome,
+  HiCalendar,
+  HiBookOpen,
+  HiCog,
+  HiLogout,
+  HiAcademicCap,
+} from "react-icons/hi";
 
 type RoomFormData = {
-    name: string;
-    capacity: number;
+  name: string;
+  capacity: number;
 };
 
 function NewRoom() {
-    const { register, handleSubmit, formState: { errors, isValid }, reset } = useForm<RoomFormData>({mode: "onChange"});
-    const [success, setSuccess] = useState(false);
-    
-    async function onSubmit(data: RoomFormData) {
-        try {
-            const response = await fetch("http://localhost:3000/api/rooms", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify(data)
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+  const navigate = useNavigate();
+  const context = useContext(UserContext);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm<RoomFormData>({ mode: "onChange" });
+  const [success, setSuccess] = useState(false);
 
-            const result = await response.json();
-            console.log(result);
+  if (!context) return null;
+  const { user, logout } = context;
 
-            setSuccess(true);
-            setTimeout(() => {
-                setSuccess(false);
-                reset();
-            }, 10000);
+  const navLinks = [
+    { to: `/dashboard/${user?.roleLabel}`, label: "Accueil", icon: <HiHome /> },
+    { to: "/viewreservation", label: "Planning", icon: <HiCalendar /> },
+    { to: "/createreservation", label: "Mes réservations", icon: <HiBookOpen /> },
+    ...(user?.roleLabel === "Admin"
+      ? [{ to: "/dashboard/Admin", label: "Espace Admin", icon: <HiCog /> }]
+      : []),
+  ];
 
-        } catch (error) {
-            console.error("Erreur dans la création de salle:", error);
-        }
-    };
+  const roleBadge = () => {
+    if (user?.roleLabel === "Admin") return { icon: <HiCog />, label: "Admin" };
+    if (user?.roleLabel === "Formateur") return { icon: <HiBookOpen />, label: "Formateur" };
+    return { icon: <HiAcademicCap />, label: "Apprenant" };
+  };
+  const badge = roleBadge();
 
-    return (
-        <>
-            <h1 className="text-center text-4xl font-bold p-4 mb-8">CREATION DE SALLE</h1>
-            <form className="flex flex-col items-center justify-center p-6 space-y-8 min-h-screen p-3" onSubmit={handleSubmit(onSubmit)}>
+  async function onSubmit(data: RoomFormData) {
+    try {
+      const response = await fetch("http://localhost:3000/api/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!response.ok)
+        throw new Error(`HTTP error! status: ${response.status}`);
 
-                <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-6">
-                        <label className="text-black bg-[#D9D9D9] p-2 w-[84px]">Nom</label>
-                        <input className="bg-white m-2 p-2 w-[212px]" type="text" {...register("name", { required: "Le nom de la salle est obligatoire", minLength: { value: 5, message: "Le nom de la salle doit comporter au moins 5 caractères" } })} />
-                    </div>
-                    {errors.name && <p className="text-black-500 font-bold text-sm">{errors.name.message}</p>}
-                </div>
+      const result = await response.json();
+      console.log(result);
 
-                <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-6">
-                        <label className="text-black bg-[#D9D9D9] p-2 w-[84px]">Capacité</label>
-                        <input className="bg-white m-2 p-2 w-[212px]" type="number" {...register("capacity", { required: "La capacité ne doit pas être nulle" })} />
-                    </div>
-                    {errors.capacity && <p className="text-black-500 font-bold text-sm">{errors.capacity.message}</p>}
-                </div>
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        reset();
+      }, 10000);
+    } catch (error) {
+      console.error("Erreur dans la création de salle:", error);
+    }
+  }
 
-                <div className="flex flex-col items-center gap-3">
-                    <button disabled={!isValid} className="w-44 text-white bg-black border-2 border-white rounded-xl p-2 disabled:opacity-40 disabled:cursor-not-allowed" type="submit">Valider</button>
-                    {success && (
-                        <div className="flex items-center gap-2 rounded-lg bg-green-600 px-5 py-3 text-white shadow-lg">
-                            <span>✓ Salle créée avec succès !</span>
-                        </div>
-                    )}
-                </div>
+  return (
+    <div className="min-h-screen bg-navy">
 
-            </form>
-        </>
-    )
+      {/* Navbar */}
+      <nav className="bg-navy-nav border-b border-navy-border">
+        <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[62px] gap-6">
+          <span className="text-lime font-bold text-sm tracking-widest shrink-0">
+            LA BONNE SALLE
+          </span>
+          <div className="flex items-center gap-1 flex-1">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end
+                className={({ isActive }) =>
+                  isActive
+                    ? "flex items-center gap-2 px-4 py-2 rounded-lg bg-lime text-navy font-semibold text-sm"
+                    : "flex items-center gap-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-navy-border text-sm transition-colors"
+                }
+              >
+                {link.icon}
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {user && (
+              <span className="badge-green text-xs flex items-center gap-1">
+                {badge.icon} {badge.label}
+              </span>
+            )}
+            <button
+              onClick={() => { logout(); navigate("/"); }}
+              className="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm transition-colors"
+            >
+              <HiLogout /> Déconnexion
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Contenu centré */}
+      <div className="flex items-center justify-center px-4 py-16">
+        <div className="card w-full max-w-lg p-8 border-t-4 border-t-lime">
+
+          <div className="mb-8">
+            <p className="section-label">Administration</p>
+            <h2 className="text-2xl font-bold text-white">Création de salle</h2>
+          </div>
+
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+            <div>
+              <label className="block text-gray-400 text-sm mb-1">
+                Nom de la salle
+              </label>
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Salle Horizon"
+                {...register("name", {
+                  required: "Le nom de la salle est obligatoire",
+                  minLength: { value: 5, message: "Minimum 5 caractères" },
+                })}
+              />
+              {errors.name && (
+                <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-gray-400 text-sm mb-1">Capacité</label>
+              <input
+                type="number"
+                className="input-field"
+                placeholder="20"
+                {...register("capacity", {
+                  required: "La capacité est obligatoire",
+                })}
+              />
+              {errors.capacity && (
+                <p className="text-red-400 text-xs mt-1">
+                  {errors.capacity.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex gap-3 mt-2">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="btn-outline flex items-center justify-center gap-2 flex-1"
+              >
+                <HiArrowLeft /> Retour
+              </button>
+              <button
+                type="submit"
+                disabled={!isValid}
+                className="btn-lime flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Créer la salle
+              </button>
+            </div>
+
+            {success && (
+              <div className="flex items-center gap-2 rounded-lg bg-lime/20 border border-lime/40 px-4 py-3 text-lime text-sm font-medium">
+                ✓ Salle créée avec succès !
+              </div>
+            )}
+          </form>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default NewRoom;
