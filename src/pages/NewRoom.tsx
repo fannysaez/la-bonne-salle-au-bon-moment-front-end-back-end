@@ -11,6 +11,7 @@ import {
   HiLogout,
   HiAcademicCap,
 } from "react-icons/hi";
+import Navbar from "../composants/NavBar";
 
 type RoomFormData = {
   name: string;
@@ -73,51 +74,13 @@ function NewRoom() {
 
   return (
     <div className="min-h-screen bg-navy">
-
-      {/* Navbar */}
-      <nav className="bg-navy-nav border-b border-navy-border">
-        <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[62px] gap-6">
-          <span className="text-lime font-bold text-sm tracking-widest shrink-0">
-            LA BONNE SALLE
-          </span>
-          <div className="flex items-center gap-1 flex-1">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end
-                className={({ isActive }) =>
-                  isActive
-                    ? "flex items-center gap-2 px-4 py-2 rounded-lg bg-lime text-navy font-semibold text-sm"
-                    : "flex items-center gap-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-navy-border text-sm transition-colors"
-                }
-              >
-                {link.icon}
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            {user && (
-              <span className="badge-green text-xs flex items-center gap-1">
-                {badge.icon} {badge.label}
-              </span>
-            )}
-            <button
-              onClick={() => { logout(); navigate("/"); }}
-              className="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm transition-colors"
-            >
-              <HiLogout /> Déconnexion
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Contenu centré */}
       <div className="flex items-center justify-center px-4 py-16">
         <div className="card w-full max-w-lg p-8 border-t-4 border-t-lime">
 
-          <div className="mb-8">
+          <div className="mb-8 page-header-text">
             <p className="section-label">Administration</p>
             <h2 className="text-2xl font-bold text-white">Création de salle</h2>
           </div>
