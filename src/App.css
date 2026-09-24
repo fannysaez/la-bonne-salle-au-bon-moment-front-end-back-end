@@ -1,1 +1,48 @@
 @import "tailwindcss";
+
+@theme {
+  --color-navy: #0D1B2D;
+  --color-navy-card: #152A44;
+  --color-navy-nav: #09121F;
+  --color-navy-border: #1E3A5F;
+  --color-lime: #7CB518;
+  --font-sans: 'Inter', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-navy);
+    color: white;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  .btn-lime {
+    @apply bg-lime text-navy font-bold px-5 py-2.5 rounded-lg hover:brightness-110 transition-all cursor-pointer;
+  }
+  .btn-outline {
+    @apply border border-navy-border text-gray-300 px-5 py-2.5 rounded-lg hover:border-lime hover:text-lime transition-all cursor-pointer;
+  }
+  .card {
+    @apply bg-navy-card rounded-xl border border-navy-border;
+  }
+  .input-field {
+    @apply w-full bg-navy border border-navy-border rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-lime transition-colors;
+  }
+  .badge-green {
+    @apply bg-lime/20 text-lime text-xs font-semibold px-3 py-1 rounded-full;
+  }
+  .badge-red {
+    @apply bg-red-500/20 text-red-400 text-xs font-semibold px-3 py-1 rounded-full;
+  }
+  .badge-orange {
+    @apply bg-orange-400/20 text-orange-400 text-xs font-semibold px-3 py-1 rounded-full;
+  }
+  .badge-gray {
+    @apply bg-gray-500/20 text-gray-400 text-xs font-semibold px-3 py-1 rounded-full;
+  }
+  .section-label {
+    @apply text-lime text-xs font-semibold tracking-widest uppercase mb-3;
+  }
+}
