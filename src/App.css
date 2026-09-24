@@ -46,3 +46,117 @@
     @apply text-lime text-xs font-semibold tracking-widest uppercase mb-3;
   }
 }
+
+/* Responsive navbar — EN DEHORS des layers */
+.nav-desktop { display: none !important; }
+.nav-mobile-btn { display: flex !important; }
+
+@media (min-width: 768px) {
+  .nav-desktop { display: flex !important; }
+  .nav-mobile-btn { display: none !important; }
+}
+
+/* Page headers responsive */
+.page-header { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+.page-header-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: nowrap; }
+
+@media (min-width: 768px) {
+  .page-header { flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; }
+}
+
+/* Boutons icône seule sur mobile */
+.btn-label { display: none; }
+
+@media (min-width: 768px) {
+  .btn-label { display: inline; }
+}
+
+/* Icône bâtiment — masquée sur mobile */
+.room-icon { display: none; }
+
+@media (min-width: 768px) {
+  .room-icon { display: flex; }
+}
+
+/* Centrage header mobile */
+.page-header > div:first-child { text-align: center; }
+.page-header-actions { justify-content: center; }
+
+@media (min-width: 768px) {
+  .page-header > div:first-child { text-align: left; }
+  .page-header-actions { justify-content: flex-end; }
+}
+
+/* Filtres — dropdown mobile / pills desktop */
+.filter-mobile { display: block; }
+.filter-desktop { display: none; }
+@media (min-width: 768px) {
+  .filter-mobile { display: none; }
+  .filter-desktop { display: flex; }
+}
+
+/* UserList — cartes mobile / tableau desktop */
+.user-cards-mobile { display: flex; flex-direction: column; gap: 0.75rem; }
+.user-table-desktop { display: none; }
+@media (min-width: 768px) {
+  .user-cards-mobile { display: none; }
+  .user-table-desktop { display: block; }
+}
+
+/* Centrage header texte mobile */
+.page-header-text { text-align: center !important; }
+@media (min-width: 768px) {
+  .page-header-text { text-align: left; }
+}
+
+/* Bouton rechercher centré mobile */
+.search-btn-wrapper { display: flex; justify-content: center; width: 100%; }
+@media (min-width: 768px) {
+  .search-btn-wrapper { justify-content: flex-start; }
+}
+
+/* ViewReservation calendrier mobile */
+.cal-event-full { display: inline; }
+.cal-event-short { display: none; }
+.cal-cell { min-height: 90px; padding: 4px; }
+@media (min-width: 768px) {
+  .cal-event-full { display: inline; }
+  .cal-event-short { display: none; }
+  .cal-cell { min-height: 110px; padding: 8px; }
+}
+@media (max-width: 767px) {
+  .cal-event-full { display: none; }
+  .cal-event-short { display: inline; }
+}
+.cal-month-label { font-size: 1rem; min-width: 140px; }
+@media (min-width: 768px) { .cal-month-label { font-size: 1.125rem; min-width: 180px; } }
+
+/* FormCompte rôles */
+.role-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 768px) { .role-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* FormCompte rôle select/grille */
+.role-select-mobile { display: block; }
+.role-grid-desktop { display: none; }
+@media (min-width: 768px) {
+  .role-select-mobile { display: none; }
+  .role-grid-desktop { display: grid; grid-template-columns: repeat(4, 1fr); }
+}
+/* Boutons form égaux */
+.form-btn-equal { flex: none; }
+
+/* Mot de passe empilé sur mobile */
+.form-pwd-grid { display: grid !important; grid-template-columns: 1fr !important; }
+@media (min-width: 768px) { .form-pwd-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* Établissement empilé sur mobile */
+.form-etab-grid { display: grid !important; grid-template-columns: 1fr !important; }
+@media (min-width: 768px) { .form-etab-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+
+/* ===== Stepper mobile / desktop ===== */
+.stepper-mobile { display: block; }
+.stepper-desktop { display: none; }
+@media (min-width: 768px) {
+  .stepper-mobile { display: none; }
+  .stepper-desktop { display: block; }
+}
