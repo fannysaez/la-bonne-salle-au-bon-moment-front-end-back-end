@@ -1,18 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { RoomContext } from "../context/RoomContext";
 import { UserContext } from "../context/UserContext";
-import { useNavigate, NavLink } from "react-router";
+import { useNavigate } from "react-router";
 import {
   HiPlus,
   HiTrash,
   HiPencil,
   HiSearch,
   HiOfficeBuilding,
-  HiHome,
-  HiCalendar,
-  HiBookOpen,
   HiCog,
-  HiLogout,
+  HiBookOpen,
   HiAcademicCap,
   HiUsers,
   HiUser,
@@ -30,23 +27,7 @@ function RoomList() {
   useEffect(() => { getRoomList(); }, []);
 
   if (!context) return null;
-  const { user, logout } = context;
-
-  const navLinks = [
-    { to: `/dashboard/${user?.roleLabel}`, label: "Accueil", icon: <HiHome /> },
-    { to: "/viewreservation", label: "Planning", icon: <HiCalendar /> },
-    { to: "/createreservation", label: "Mes réservations", icon: <HiBookOpen /> },
-    ...(user?.roleLabel === "Admin"
-      ? [{ to: "/roomlist", label: "Espace Admin", icon: <HiCog /> }]
-      : []),
-  ];
-
-  const roleBadge = () => {
-    if (user?.roleLabel === "Admin") return { icon: <HiCog />, label: "Admin" };
-    if (user?.roleLabel === "Formateur") return { icon: <HiBookOpen />, label: "Formateur" };
-    return { icon: <HiAcademicCap />, label: "Apprenant" };
-  };
-  const badge = roleBadge();
+  const { user } = context;
 
   const filtered = roomList.filter((room) =>
     room.name.toLowerCase().includes(search.toLowerCase())
@@ -92,7 +73,7 @@ function RoomList() {
               type="text"
               placeholder="Rechercher une salle..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setPage(0); }}
               className="input-field pl-10 w-full"
             />
           </div>
@@ -124,16 +105,16 @@ function RoomList() {
                 {paginated.map((room) => (
                   <tr key={room._id} className="hover:bg-navy-border/30 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="page-header-actions">
-                        <div className="room-icon w-9 h-9 rounded-lg bg-lime/10 flex items-center justify-center shrink-0">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-lime/10 flex items-center justify-center shrink-0">
                           <HiOfficeBuilding className="text-lime text-lg" />
                         </div>
                         <span className="text-white font-medium">{room.name}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-gray-300 text-sm">
-                        <span className="flex items-center gap-1"><HiUser className="text-gray-400" />{room.capacity}</span>
+                      <span className="flex items-center gap-1 text-gray-300 text-sm">
+                        <HiUser className="text-gray-400" />{room.capacity}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -142,13 +123,13 @@ function RoomList() {
                           onClick={() => navigate(`/NewRoom?id=${room._id}`)}
                           className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-navy-border text-gray-300 hover:text-white hover:border-lime/50 transition-colors cursor-pointer"
                         >
-                          <HiPencil className="text-base" /> <span className="btn-label">Éditer</span>
+                          <HiPencil className="text-base" /> Éditer
                         </button>
                         <button
                           onClick={() => deleteRoom(room._id)}
                           className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-red-800/60 text-red-400 hover:bg-red-900/20 hover:border-red-600 transition-colors cursor-pointer"
                         >
-                          <HiTrash className="text-base" /> <span className="btn-label">Suppr.</span>
+                          <HiTrash className="text-base" /> Suppr.
                         </button>
                       </div>
                     </td>
@@ -156,7 +137,9 @@ function RoomList() {
                 ))}
               </tbody>
             </table>
-            <div className="px-6 py-3 border-t border-navy-border">
+
+            {/* Pagination */}
+            <div className="px-6 py-3 border-t border-navy-border flex flex-col items-center gap-2">
               <p className="text-gray-500 text-xs">
                 {filtered.length} résultat{filtered.length !== 1 ? "s" : ""}
               </p>
@@ -179,9 +162,6 @@ function RoomList() {
                   </button>
                 </div>
               )}
-              <p className="hidden">
-                {search && ` pour "${search}"`}
-              </p>
             </div>
           </div>
         )}
