@@ -13,6 +13,7 @@ import {
   HiLogout,
   HiAcademicCap,
 } from "react-icons/hi";
+import Navbar from "../composants/NavBar";
 
 const MONTHS_FR = [
   "Janvier","Février","Mars","Avril","Mai","Juin",
@@ -92,51 +93,13 @@ function ViewReservation() {
 
   return (
     <div className="min-h-screen bg-navy">
-
-      {/* Navbar */}
-      <nav className="bg-navy-nav border-b border-navy-border">
-        <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[62px] gap-6">
-          <span className="text-lime font-bold text-sm tracking-widest shrink-0">
-            LA BONNE SALLE
-          </span>
-          <div className="flex items-center gap-1 flex-1">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end
-                className={({ isActive }) =>
-                  isActive
-                    ? "flex items-center gap-2 px-4 py-2 rounded-lg bg-lime text-navy font-semibold text-sm"
-                    : "flex items-center gap-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-navy-border text-sm transition-colors"
-                }
-              >
-                {link.icon}
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            {user && (
-              <span className="badge-green text-xs flex items-center gap-1">
-                {badge.icon} {badge.label}
-              </span>
-            )}
-            <button
-              onClick={() => { logout(); navigate("/"); }}
-              className="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm transition-colors"
-            >
-              <HiLogout /> Déconnexion
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Contenu */}
       <main className="max-w-screen-xl mx-auto px-6 py-10">
 
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 page-header-text">
           <h1 className="text-3xl font-bold text-white">Planning des réservations</h1>
           <p className="text-gray-400 mt-1">Vue mensuelle de toutes les réservations</p>
         </div>
@@ -152,7 +115,7 @@ function ViewReservation() {
             >
               <HiChevronLeft className="text-2xl" />
             </button>
-            <span className="text-white font-semibold text-lg min-w-[180px] text-center">
+            <span className="text-white font-semibold text-lg text-center cal-month-label">
               {MONTHS_FR[month]} {year}
             </span>
             <button
@@ -187,7 +150,7 @@ function ViewReservation() {
               return (
                 <div
                   key={idx}
-                  className={`min-h-[110px] p-2 border-b border-r border-navy-border
+                  className={`cal-cell border-b border-r border-navy-border
                     ${!day ? "bg-navy-nav/20" : ""}
                     ${today_ ? "ring-2 ring-inset ring-lime/50 bg-lime/5" : ""}
                     ${isWeekend && day ? "bg-navy-nav/10" : ""}
@@ -207,9 +170,9 @@ function ViewReservation() {
                           <div
                             key={r._id}
                             title={`${getRoomName(r.roomId)} ${formatTime(r.startDate)}-${formatTime(r.endDate)}`}
-                            className="bg-lime text-navy text-xs font-semibold px-2 py-0.5 rounded truncate cursor-default"
+                            className="bg-lime text-navy text-xs font-semibold px-1 py-0.5 rounded truncate cursor-default"
                           >
-                            {getRoomName(r.roomId)} {formatTime(r.startDate)}-{formatTime(r.endDate)}
+                            <span className="cal-event-full">{getRoomName(r.roomId)} </span>{formatTime(r.startDate)}
                           </div>
                         ))}
                       </div>
