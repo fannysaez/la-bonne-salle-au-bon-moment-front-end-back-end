@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, NavLink } from "react-router";
 import { UserContext } from "../context/UserContext";
 import { RoomContext } from "../context/RoomContext";
@@ -17,6 +17,7 @@ import {
   HiClipboardList,
   HiDocumentReport,
 } from "react-icons/hi";
+import Navbar from "../composants/NavBar";
 
 const RECENT_ACTIVITY = [
   { text: "Marie L. a réservé Salle Innovation – 24 Sept 09h00", time: "Il y a 5 min" },
@@ -31,6 +32,10 @@ export default function Dashboard() {
   const context = useContext(UserContext);
   const roomCtx = useContext(RoomContext);
   const resaCtx = useContext(ReservationContext);
+  const [actPage, setActPage] = useState(0);
+  const ACT_PER_PAGE = 3;
+  const actTotal = Math.ceil(RECENT_ACTIVITY.length / ACT_PER_PAGE);
+  const actVisible = RECENT_ACTIVITY.slice(actPage * ACT_PER_PAGE, (actPage + 1) * ACT_PER_PAGE);
 
   if (!context) return null;
   const { user, logout } = context;
@@ -66,44 +71,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-navy">
-      {/* Navbar */}
-      <nav className="bg-navy-nav border-b border-navy-border">
-        <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[62px] gap-6">
-          <span className="text-lime font-bold text-sm tracking-widest shrink-0">
-            LA BONNE SALLE
-          </span>
-          <div className="flex items-center gap-1 flex-1">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end
-                className={({ isActive }) =>
-                  isActive
-                    ? "flex items-center gap-2 px-4 py-2 rounded-lg bg-lime text-navy font-semibold text-sm"
-                    : "flex items-center gap-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-navy-border text-sm transition-colors"
-                }
-              >
-                {link.icon}
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            {user && (
-              <span className="badge-green text-xs flex items-center gap-1">
-                {badge.icon} {badge.label}
-              </span>
-            )}
-            <button
-              onClick={() => { logout(); navigate("/"); }}
-              className="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm transition-colors"
-            >
-              <HiLogout /> Déconnexion
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <main className="max-w-screen-xl mx-auto px-6 py-10">
 
@@ -176,18 +144,18 @@ export default function Dashboard() {
                 <span className="text-white text-sm font-medium">Voir les demandes</span>
               </button>
               <button
-                disabled
-                className="card p-4 flex items-center gap-3 text-left opacity-40 cursor-not-allowed"
+                onClick={() => navigate("/roomlist")}
+                className="card p-4 flex items-center gap-3 text-left hover:border-purple-400 transition-colors group"
               >
                 <HiDocumentReport className="text-purple-400 text-xl shrink-0" />
-                <span className="text-white text-sm font-medium">Exporter rapport</span>
+                <span className="text-white text-sm font-medium">Gérer les salles</span>
               </button>
             </div>
 
             {/* Activité récente */}
             <p className="section-label mb-3">Activité récente</p>
             <div className="card divide-y divide-navy-border">
-              {RECENT_ACTIVITY.map((item, i) => (
+              {actVisible.map((item, i) => (
                 <div key={i} className="flex items-start gap-3 px-5 py-4">
                   <span className="mt-1.5 w-2 h-2 rounded-full bg-lime shrink-0" />
                   <div>
@@ -197,6 +165,25 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
+            {actTotal > 1 && (
+              <div className="flex items-center justify-center gap-3 mt-4">
+                <button
+                  onClick={() => setActPage((p) => Math.max(0, p - 1))}
+                  disabled={actPage === 0}
+                  className="btn-outline text-sm px-3 py-1.5 disabled:opacity-30"
+                >
+                  ← Précédent
+                </button>
+                <span className="text-gray-400 text-sm">{actPage + 1} / {actTotal}</span>
+                <button
+                  onClick={() => setActPage((p) => Math.min(actTotal - 1, p + 1))}
+                  disabled={actPage === actTotal - 1}
+                  className="btn-outline text-sm px-3 py-1.5 disabled:opacity-30"
+                >
+                  Suivant →
+                </button>
+              </div>
+            )}
           </>
         )}
 
