@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes, Navigate } from "react-router";  // ← ajoute Navigate
 import FormCompte from "./composants/formCompte";
 import LoginUser from "./pages/LoginUser";
 import ProtectedRoute from "./composants/ProtectedRoute";
@@ -13,6 +13,7 @@ import RoomList from "./pages/RoomList";
 function AppRoutes() {
     return (
         <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />  {/* ← AJOUTE */}
             <Route path="/login" element={<LoginUser />} />
             <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard/:role" element={<Dashboard />} />
