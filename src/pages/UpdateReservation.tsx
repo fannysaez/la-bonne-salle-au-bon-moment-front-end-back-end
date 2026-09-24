@@ -85,32 +85,74 @@ function UpdateReservation() {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Salle</label>
-          <select name="roomId" value={form.roomId} onChange={(e) => setForm({ ...form, roomId: e.target.value })} required>
-            {roomList.map((room) => (
-              <option key={room._id} value={room._id}>
-                {room.name} / capacité : {room.capacity}
-              </option>
-            ))}
-          </select>
+    <div className="min-h-screen bg-navy flex items-center justify-center px-4">
+      <div className="card w-full max-w-lg p-8 border-t-4 border-t-lime">
+
+        <div className="mb-8">
+          <p className="section-label">Planning</p>
+          <h2 className="text-2xl font-bold text-white">Modifier la réservation</h2>
         </div>
 
-        <div>
-          <label>Date de début</label>
-          <input type="datetime-local" step="3600" name="startDate" value={form.startDate} onChange={handleChange} required />
-        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
-        <div>
-          <label>Date de fin</label>
-          <input type="datetime-local" step="3600" name="endDate" value={form.endDate} onChange={handleChange} required />
-        </div>
+          <div>
+            <label className="block text-gray-400 text-sm mb-1">Salle</label>
+            <select
+              name="roomId"
+              value={form.roomId}
+              onChange={(e) => setForm({ ...form, roomId: e.target.value })}
+              required
+              className="input-field"
+            >
+              {roomList.map((room) => (
+                <option key={room._id} value={room._id}>
+                  {room.name} — capacité : {room.capacity}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <button type="submit">Modifier</button>
-        <button type="button">Annuler</button>
-      </form>
+          <div>
+            <label className="block text-gray-400 text-sm mb-1">Date de début</label>
+            <input
+              type="datetime-local"
+              step="3600"
+              name="startDate"
+              value={form.startDate}
+              onChange={handleChange}
+              required
+              className="input-field"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-400 text-sm mb-1">Date de fin</label>
+            <input
+              type="datetime-local"
+              step="3600"
+              name="endDate"
+              value={form.endDate}
+              onChange={handleChange}
+              required
+              className="input-field"
+            />
+          </div>
+
+          <div className="flex gap-3 mt-2">
+            <button type="submit" className="btn-lime flex-1">
+              Enregistrer les modifications
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="btn-outline flex-1"
+            >
+              Annuler
+            </button>
+          </div>
+
+        </form>
+      </div>
     </div>
   );
 }
