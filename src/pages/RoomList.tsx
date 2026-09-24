@@ -15,13 +15,17 @@ import {
   HiLogout,
   HiAcademicCap,
   HiUsers,
+  HiUser,
 } from "react-icons/hi";
+import Navbar from "../composants/NavBar";
 
 function RoomList() {
   const { getRoomList, roomList, deleteRoom } = useContext(RoomContext);
   const context = useContext(UserContext);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const PER_PAGE = 5;
 
   useEffect(() => { getRoomList(); }, []);
 
@@ -47,52 +51,16 @@ function RoomList() {
   const filtered = roomList.filter((room) =>
     room.name.toLowerCase().includes(search.toLowerCase())
   );
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+  const paginated = filtered.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
 
   return (
     <div className="min-h-screen bg-navy">
+      <Navbar />
 
-      {/* Navbar */}
-      <nav className="bg-navy-nav border-b border-navy-border">
-        <div className="max-w-screen-xl mx-auto px-6 flex items-center h-[62px] gap-6">
-          <span className="text-lime font-bold text-sm tracking-widest shrink-0">
-            LA BONNE SALLE
-          </span>
-          <div className="flex items-center gap-1 flex-1">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end
-                className={({ isActive }) =>
-                  isActive
-                    ? "flex items-center gap-2 px-4 py-2 rounded-lg bg-lime text-navy font-semibold text-sm"
-                    : "flex items-center gap-2 px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-navy-border text-sm transition-colors"
-                }
-              >
-                {link.icon}
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            {user && (
-              <span className="badge-green text-xs flex items-center gap-1">
-                {badge.icon} {badge.label}
-              </span>
-            )}
-            <button
-              onClick={() => { logout(); navigate("/"); }}
-              className="flex items-center gap-2 text-gray-400 hover:text-red-400 text-sm transition-colors"
-            >
-              <HiLogout /> Déconnexion
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <div className="px-8 py-10">
+      <div className="px-4 py-6 md:px-8 md:py-10">
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
+        <div className="page-header">
           <div>
             <p className="section-label">Administration</p>
             <h2 className="text-3xl font-bold text-white">Gestion des salles</h2>
@@ -100,16 +68,16 @@ function RoomList() {
               {roomList.length} salle{roomList.length !== 1 ? "s" : ""} enregistrée{roomList.length !== 1 ? "s" : ""} dans le système
             </p>
           </div>
-          <div className="flex items-center gap-3 mt-1">
+          <div className="page-header-actions">
             <button
               onClick={() => navigate("/userlist")}
-              className="btn-outline flex items-center gap-2"
+              className="btn-outline flex items-center gap-2 text-sm px-3 py-2"
             >
               <HiUsers /> Gérer les comptes
             </button>
             <button
               onClick={() => navigate("/NewRoom")}
-              className="btn-lime flex items-center gap-2"
+              className="btn-lime flex items-center gap-2 text-sm px-3 py-2"
             >
               <HiPlus /> Nouvelle salle
             </button>
@@ -143,7 +111,7 @@ function RoomList() {
             </p>
           </div>
         ) : (
-          <div className="card overflow-hidden">
+          <div className="card overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-navy-border">
@@ -153,11 +121,11 @@ function RoomList() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-navy-border">
-                {filtered.map((room) => (
+                {paginated.map((room) => (
                   <tr key={room._id} className="hover:bg-navy-border/30 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-lime/10 flex items-center justify-center shrink-0">
+                      <div className="page-header-actions">
+                        <div className="room-icon w-9 h-9 rounded-lg bg-lime/10 flex items-center justify-center shrink-0">
                           <HiOfficeBuilding className="text-lime text-lg" />
                         </div>
                         <span className="text-white font-medium">{room.name}</span>
@@ -165,7 +133,7 @@ function RoomList() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-gray-300 text-sm">
-                        {room.capacity} personne{room.capacity !== 1 ? "s" : ""}
+                        <span className="flex items-center gap-1"><HiUser className="text-gray-400" />{room.capacity}</span>
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -174,13 +142,13 @@ function RoomList() {
                           onClick={() => navigate(`/NewRoom?id=${room._id}`)}
                           className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-navy-border text-gray-300 hover:text-white hover:border-lime/50 transition-colors cursor-pointer"
                         >
-                          <HiPencil className="text-base" /> Éditer
+                          <HiPencil className="text-base" /> <span className="btn-label">Éditer</span>
                         </button>
                         <button
                           onClick={() => deleteRoom(room._id)}
                           className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-red-800/60 text-red-400 hover:bg-red-900/20 hover:border-red-600 transition-colors cursor-pointer"
                         >
-                          <HiTrash className="text-base" /> Suppr.
+                          <HiTrash className="text-base" /> <span className="btn-label">Suppr.</span>
                         </button>
                       </div>
                     </td>
@@ -191,6 +159,27 @@ function RoomList() {
             <div className="px-6 py-3 border-t border-navy-border">
               <p className="text-gray-500 text-xs">
                 {filtered.length} résultat{filtered.length !== 1 ? "s" : ""}
+              </p>
+              {totalPages > 1 && (
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    disabled={page === 0}
+                    className="btn-outline text-sm px-3 py-1.5 disabled:opacity-30"
+                  >
+                    ← Précédent
+                  </button>
+                  <span className="text-gray-400 text-sm">{page + 1} / {totalPages}</span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                    disabled={page === totalPages - 1}
+                    className="btn-outline text-sm px-3 py-1.5 disabled:opacity-30"
+                  >
+                    Suivant →
+                  </button>
+                </div>
+              )}
+              <p className="hidden">
                 {search && ` pour "${search}"`}
               </p>
             </div>
