@@ -8,9 +8,6 @@ import {
   HiPencil,
   HiSearch,
   HiOfficeBuilding,
-  HiCog,
-  HiBookOpen,
-  HiAcademicCap,
   HiUsers,
   HiUser,
 } from "react-icons/hi";
@@ -123,13 +120,15 @@ function RoomList() {
                           onClick={() => navigate(`/NewRoom?id=${room._id}`)}
                           className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-navy-border text-gray-300 hover:text-white hover:border-lime/50 transition-colors cursor-pointer"
                         >
-                          <HiPencil className="text-base" /> Éditer
+                          <HiPencil className="text-base" />
+                          <span className="hidden md:inline">Éditer</span>
                         </button>
                         <button
                           onClick={() => deleteRoom(room._id)}
                           className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border border-red-800/60 text-red-400 hover:bg-red-900/20 hover:border-red-600 transition-colors cursor-pointer"
                         >
-                          <HiTrash className="text-base" /> Suppr.
+                          <HiTrash className="text-base" />
+                          <span className="hidden md:inline">Suppr.</span>
                         </button>
                       </div>
                     </td>
