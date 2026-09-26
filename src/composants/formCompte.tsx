@@ -64,23 +64,27 @@ export default function FormCompte() {
 
   if (!context) return null;
 
-  const onSubmit = async (data: FormData) => {
-    await fetch("http://localhost:3000/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        firstname: data.prenom,
-        lastname: data.nom,
-        email: data.email,
-        password: data.motDePasse,
-        roleLabel: data.role,
-        departement: data.departement,
-        numeroEtudiant: data.numeroEtudiant,
-      }),
-    });
+const onSubmit = async (data: FormData) => {
+  const res = await fetch("http://localhost:3000/api/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      firstname: data.prenom,
+      lastname: data.nom,
+      email: data.email,
+      password: data.motDePasse,
+      roleLabel: data.role,
+    }),
+  });
+
+  if (res.ok) {
     setSuccess(true);
-  };
+  } else {
+    const err = await res.json();
+    console.error("Erreur:", res.status, err);
+  }
+};
 
   const nextStep = async () => {
     const fields: Record<number, (keyof FormData)[]> = {
